@@ -29,32 +29,22 @@ class genbot_controller(request_handler):
 
     def validate_duplicate_host_url(self, p_request_url, p_raw_html, p_full_content):
 
-        print("xx1", flush=True)
         m_hash_duplication_key = str(xxhash.xxh64_intdigest(p_full_content))
-        print("xx2", flush=True)
         m_hashed_duplication_status = redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_GET_STRING, [m_hash_duplication_key, None, 60 * 60 * 24 * 5])
-        print("xx3", flush=True)
-        if m_hashed_duplication_status is not None:
-            print("xx4", flush=True)
-            files = redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_GET_LIST, [REDIS_KEYS.RAW_HTML_CODE + p_request_url[7:8], None, 60 * 60 * 24 * 10])
-            print("xx5", flush=True)
+        if m_hashed_duplication_status is None:
+            files = redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_GET_LIST, [REDIS_KEYS.RAW_HTML_CODE + p_request_url, None, None])
             m_max_similarity = 0
-            print("xx6", flush=True)
             for html in files:
                 m_similarity = self.__html_duplication_handler.verify_structural_duplication(p_raw_html, html)
                 if m_similarity > m_max_similarity:
                     m_max_similarity = m_similarity
 
-            print("xx7", flush=True)
-            redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_SET_LIST, [REDIS_KEYS.RAW_HTML_CODE + p_request_url[7:8], p_raw_html, None])
-            print("xx8", flush=True)
-            redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_SET_FLOAT, [REDIS_KEYS.RAW_HTML_SCORE + p_request_url, m_max_similarity, 60 * 60 * 24 * 10])
-            print("xx9", flush=True)
-            if m_max_similarity < 90:
-                print("xx10", flush=True)
+            print(m_max_similarity, flush=True)
+            redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_SET_LIST, [REDIS_KEYS.RAW_HTML_CODE + p_request_url, p_raw_html, None, None])
+            redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_SET_FLOAT, [REDIS_KEYS.RAW_HTML_SCORE + p_request_url, m_max_similarity, None])
+            if m_max_similarity < 0.90:
                 return True, True
 
-        print("xx11", flush=True)
         return False, True
 
     def __trigger_url_request(self, p_request_model: url_model):
@@ -65,10 +55,10 @@ class genbot_controller(request_handler):
                 m_parsed_model, m_images = self.__m_html_parser.on_parse_html(m_raw_html, p_request_model)
                 return self.validate_duplicate_host_url(p_request_model.m_url, m_raw_html, m_parsed_model.m_extended_content)
             else:
-                log.g().e(p_request_model.m_url + " : FAILED")
                 return False, False
 
-        except Exception:
+        except Exception as ex:
+            print(ex, flush=True)
             return False, False
 
     # Wait For Crawl Manager To Provide URL From Queue
@@ -78,16 +68,20 @@ class genbot_controller(request_handler):
             log.g().s(p_request_url + " : SUCCESS")
         elif m_request_status:
             log.g().w(p_request_url + " : DUPLICATE")
+        else:
+            log.g().e(p_request_url + " : FAILED")
+
         return m_request_status
 
     def invoke_trigger(self, p_command, p_data=None):
         if p_command == ICRAWL_CONTROLLER_COMMANDS.S_START_CRAWLER_INSTANCE:
-            self.start_crawler_instance(p_data[0])
+            return self.start_crawler_instance(p_data[0])
 
 
 def genbot_instance(p_url):
     try:
+        log.g().i(p_url + " : STARTED")
         m_crawler = genbot_controller()
-        m_crawler.invoke_trigger(ICRAWL_CONTROLLER_COMMANDS.S_START_CRAWLER_INSTANCE, [p_url])
+        return m_crawler.invoke_trigger(ICRAWL_CONTROLLER_COMMANDS.S_START_CRAWLER_INSTANCE, [p_url])
     except Exception as ex:
-        print("error : " + str(ex), flush=True)
+        log.g().e(str(ex) + " : LOCAL EXCEPTION")

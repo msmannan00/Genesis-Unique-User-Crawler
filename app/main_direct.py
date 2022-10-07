@@ -1,4 +1,5 @@
 from crawler.constants.app_status import APP_STATUS
+from crawler.crawler_shared_directory.log_manager.log_controller import log
 
 APP_STATUS.DOCKERIZED_RUN = False
 from crawler.constants.strings import TOR_STRINGS
@@ -15,4 +16,4 @@ try:
 
     application_controller.get_instance().invoke_triggers(APPICATION_COMMANDS.S_START_APPLICATION_DIRECT)
 except Exception as ex:
-    pass
+    log.g().e(str(ex) + " : GLOCAL EXCEPTION")

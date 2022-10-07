@@ -73,6 +73,10 @@ class redis_controller:
     def __get_keys(self):
         return self.__redis.keys()
 
+    def __clean(self):
+        for key in self.__redis.scan_iter("prefix:*"):
+            self.__redis.delete(key)
+
     def invoke_trigger(self, p_commands, p_data=None):
 
         if p_commands == REDIS_COMMANDS.S_GET_INT:
@@ -97,6 +101,7 @@ class redis_controller:
             return self.__get_float(p_data[0], p_data[1], p_data[2])
         elif p_commands == REDIS_COMMANDS.S_SET_FLOAT:
             return self.__set_float(p_data[0], p_data[1], p_data[2])
-
+        elif p_commands == REDIS_COMMANDS.S_CLEAN:
+            return self.__clean()
 
 
