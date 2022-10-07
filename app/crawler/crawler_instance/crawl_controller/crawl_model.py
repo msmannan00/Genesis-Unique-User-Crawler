@@ -30,7 +30,7 @@ class crawl_model(request_handler):
 
     def __write_data(self, p_url):
         f = open("live_url.txt", "a")
-        f.write(p_url)
+        f.write(p_url + "\n")
         f.close()
 
     def __start_direct_request(self):
