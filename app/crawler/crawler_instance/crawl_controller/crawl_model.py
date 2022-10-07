@@ -1,5 +1,4 @@
 # Local Imports
-import os
 from time import sleep
 from crawler.constants.constant import CRAWL_SETTINGS_CONSTANTS
 from crawler.constants.strings import MANAGE_CRAWLER_MESSAGES
@@ -7,8 +6,6 @@ from crawler.crawler_instance.crawl_controller.crawl_enums import CRAWL_MODEL_CO
 from crawler.crawler_instance.genbot_service import genbot_controller
 from crawler.crawler_instance.tor_controller.tor_controller import tor_controller
 from crawler.crawler_instance.tor_controller.tor_enums import TOR_COMMANDS
-from crawler.crawler_services.crawler_services.redis_manager.redis_controller import redis_controller
-from crawler.crawler_services.crawler_services.redis_manager.redis_enums import REDIS_COMMANDS
 from crawler.crawler_shared_directory.log_manager.log_controller import log
 from crawler.crawler_shared_directory.request_manager.request_handler import request_handler
 
