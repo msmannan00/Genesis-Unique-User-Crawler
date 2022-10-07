@@ -1,0 +1,62 @@
+services:
+
+    force-attach:
+      image: bash
+      command: tail -f /dev/null
+
+    api:
+        build:
+            context: ./
+            dockerfile: dockerFiles/api_docker
+        ports:
+            - "8000:8000"
+        depends_on:
+            - tor-extend
+        networks:
+            backend:
+                ipv4_address: 10.0.0.2
+        deploy:
+          resources:
+            limits:
+              memory: 8G
+
+        restart: always
+        volumes:
+            - ./app/:/app
+
+    redis_server:
+        image: redis
+        logging:
+            driver: none
+        command: redis-server --requirepass killprg1
+        networks:
+            backend:
+                ipv4_address: 10.0.0.3
+
+    tor-extend:
+        container_name: tor_instace_1
+        image: barneybuffet/tor:latest
+        environment:
+            TOR_PROXY: 'true'
+            TOR_PROXY_PORT: '0.0.0.0:9052'
+            TOR_PROXY_ACCEPT: 'accept 10.0.0.0/24'
+            TOR_CONTROL: 'false'
+            TOR_CONTROL_PORT: '0.0.0.0:9053'
+            TOR_CONTROL_PASSWORD: 'Imammehdi@00'
+            TOR_CONTROL_COOKIE: 'true'
+        volumes:
+            - ./tor:/data/tor
+        ports:
+            - "9052:9052/tcp"
+        restart: unless-stopped
+        networks:
+            backend:
+                ipv4_address: 10.0.0.6
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 10.0.0.0/24
