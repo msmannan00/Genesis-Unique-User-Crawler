@@ -2,7 +2,6 @@
 from copy import copy
 
 from crawler.crawler_instance.genbot_service.html_parse_manager import html_parse_manager
-from crawler.crawler_instance.local_shared_model.index_model import index_model_init
 from crawler.crawler_instance.local_shared_model.url_model import url_model
 
 

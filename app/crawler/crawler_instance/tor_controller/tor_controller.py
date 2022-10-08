@@ -1,12 +1,11 @@
 # Local Imports
 import requests
+
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
-
 from crawler.constants.app_status import APP_STATUS
 from crawler.constants.constant import CRAWL_SETTINGS_CONSTANTS
 from crawler.constants.keys import TOR_KEYS
-from crawler.crawler_instance.application_controller.application_enums import APPICATION_COMMANDS
 from crawler.crawler_instance.tor_controller.tor_enums import TOR_COMMANDS, TOR_PROXIES
 from crawler.crawler_shared_directory.request_manager.request_handler import request_handler
 
