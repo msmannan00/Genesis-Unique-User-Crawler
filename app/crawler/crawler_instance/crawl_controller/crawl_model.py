@@ -46,7 +46,6 @@ class crawl_model(request_handler):
                         continue
 
                     status.S_THREAD_COUNT += 1
-                    print("THREAD COUNT : " + str(status.S_THREAD_COUNT), flush=True)
                     threading.Thread(target=genbot_controller.genbot_instance, args=[m_url_node]).start()
                 except Exception as ex:
                     log.g().e(str(ex) + " : GLOBAL EXCEPTION")
