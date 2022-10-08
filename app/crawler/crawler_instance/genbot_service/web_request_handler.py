@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from crawler.constants.constant import CRAWL_SETTINGS_CONSTANTS
-from crawler.constants.keys import TOR_KEYS
 from crawler.crawler_instance.tor_controller.tor_controller import tor_controller
 from crawler.crawler_instance.tor_controller.tor_enums import TOR_COMMANDS
 
@@ -20,5 +19,5 @@ class webRequestManager:
             else:
                 return page.url, True, str(soup)
 
-        except Exception as ex:
+        except Exception:
             return p_url, False, None
