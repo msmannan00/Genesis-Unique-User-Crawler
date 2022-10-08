@@ -1,5 +1,6 @@
 *idea
 data
 *.pyc
+.venv
 tor_proxy
 global_raw
