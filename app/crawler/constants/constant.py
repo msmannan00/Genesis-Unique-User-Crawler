@@ -5,6 +5,7 @@ class RAW_PATH_CONSTANTS:
     S_SIGWIN_PATH = str(Path(__file__).parent.parent.parent.parent.parent) + "/cygwin64/bin/bash.exe --login"
     S_PROJECT_PATH = str(Path(__file__).parent.parent)
     S_CRAWLER_IMAGE_CACHE_PATH = str(Path(__file__).parent.parent.parent) + "/global_raw/crawler_image_cache/"
+    S_UNIQUE_HOST_FILE = "live_url.txt"
 
 
 class NETWORK_MONITOR:

@@ -16,7 +16,6 @@ services:
             limits:
               memory: 8G
 
-        restart: always
         volumes:
             - ./app/:/app
 

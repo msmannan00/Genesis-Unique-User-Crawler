@@ -2,6 +2,7 @@
 from threading import Lock
 
 from crawler.constants import status
+from crawler.constants.constant import RAW_PATH_CONSTANTS
 from crawler.crawler_instance.genbot_service.genbot_enums import ICRAWL_CONTROLLER_COMMANDS
 from crawler.crawler_instance.local_shared_model.url_model import url_model, url_model_init
 from crawler.crawler_instance.tor_controller.tor_controller import tor_controller
@@ -10,6 +11,7 @@ from crawler.crawler_services.crawler_services.redis_manager.redis_controller im
 from crawler.crawler_services.crawler_services.redis_manager.redis_enums import REDIS_COMMANDS, REDIS_KEYS
 from crawler.crawler_instance.genbot_service.parse_controller import parse_controller
 from crawler.crawler_instance.genbot_service.web_request_handler import webRequestManager
+from crawler.crawler_services.helper_services.helper_method import helper_method
 from crawler.crawler_services.url_duplication_manager.html_duplication_controller import html_duplication_controller
 from crawler.crawler_shared_directory.log_manager.log_controller import log
 from crawler.crawler_shared_directory.request_manager.request_handler import request_handler
@@ -77,11 +79,6 @@ class genbot_controller(request_handler):
             print(ex, flush=True)
             return False, False
 
-    def __write_data(self, p_url):
-        f = open("live_url.txt", "a")
-        f.write(p_url + "\n")
-        f.close()
-
     # Wait For Crawl Manager To Provide URL From Queue
     def start_crawler_instance(self, p_request_url):
         self.init(p_request_url)
@@ -92,7 +89,7 @@ class genbot_controller(request_handler):
         m_duplicate_status, m_request_status = self.__trigger_url_request(url_model_init(p_request_url, 0))
         if m_duplicate_status:
             log.g().s(p_request_url + " : SUCCESS")
-            self.__write_data(p_request_url)
+            helper_method.write_data(p_request_url, RAW_PATH_CONSTANTS.S_UNIQUE_HOST_FILE)
         elif m_request_status:
             log.g().w(p_request_url + " : DUPLICATE")
         else:

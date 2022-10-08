@@ -46,3 +46,20 @@ class helper_method:
             return True
         else:
             return False
+
+    @staticmethod
+    def write_data(p_content, p_path):
+        f = open(p_path.S_UNIQUE_HOST_FILE, "a")
+        f.write(p_content + "\n")
+        f.close()
+
+    @staticmethod
+    def sort_result(p_file):
+        m_lines = []
+        with open(p_file) as file:
+            for line in file:
+                m_lines.append(line.rstrip())
+        m_lines.sort()
+        with open(p_file, 'w') as f:
+            for line in m_lines:
+                f.write(f"{line}\n")

@@ -2,7 +2,7 @@
 import threading
 from time import sleep
 from crawler.constants import status
-from crawler.constants.constant import CRAWL_SETTINGS_CONSTANTS
+from crawler.constants.constant import CRAWL_SETTINGS_CONSTANTS, RAW_PATH_CONSTANTS
 from crawler.constants.strings import MANAGE_CRAWLER_MESSAGES
 from crawler.crawler_instance.crawl_controller.crawl_enums import CRAWL_MODEL_COMMANDS
 from crawler.crawler_instance.genbot_service import genbot_controller
@@ -10,6 +10,7 @@ from crawler.crawler_instance.tor_controller.tor_controller import tor_controlle
 from crawler.crawler_instance.tor_controller.tor_enums import TOR_COMMANDS
 from crawler.crawler_services.crawler_services.redis_manager.redis_controller import redis_controller
 from crawler.crawler_services.crawler_services.redis_manager.redis_enums import REDIS_COMMANDS
+from crawler.crawler_services.helper_services.helper_method import helper_method
 from crawler.crawler_shared_directory.log_manager.log_controller import log
 from crawler.crawler_shared_directory.request_manager.request_handler import request_handler
 
@@ -50,14 +51,17 @@ class crawl_model(request_handler):
                 except Exception as ex:
                     log.g().e(str(ex) + " : GLOBAL EXCEPTION")
 
-            while status.S_THREAD_COUNT >0:
+            while status.S_THREAD_COUNT > 0:
                 sleep(5)
                 continue
 
             if m_counter == 6:
                 redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_CLEAN, [])
+                helper_method.sort_result(RAW_PATH_CONSTANTS.S_UNIQUE_HOST_FILE)
                 log.g().s("GLOBAL DUPLICATION CRAWL FINISHED")
                 break
+
+        raise SystemExit
 
     def invoke_trigger(self, p_command, p_data=None):
         if p_command == CRAWL_MODEL_COMMANDS.S_INIT:
