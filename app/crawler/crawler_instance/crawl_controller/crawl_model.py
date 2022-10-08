@@ -42,7 +42,7 @@ class crawl_model(request_handler):
             for m_url_node in m_live_url_list:
                 try:
                     while status.S_THREAD_COUNT >= CRAWL_SETTINGS_CONSTANTS.S_MAX_THREAD_COUNT:
-                        sleep(1)
+                        sleep(0.1)
                         continue
 
                     status.S_THREAD_COUNT += 1
