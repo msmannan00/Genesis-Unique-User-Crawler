@@ -5,7 +5,7 @@ services:
             context: ./
             dockerfile: dockerFiles/api_docker
         ports:
-            - "8000:8000"
+            - "8002:8002"
         depends_on:
             - tor-extend
         networks:
