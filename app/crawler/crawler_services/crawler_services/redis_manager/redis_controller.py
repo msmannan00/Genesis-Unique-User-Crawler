@@ -74,8 +74,8 @@ class redis_controller:
         return self.__redis.keys()
 
     def __clean(self):
-        for key in self.__redis.scan_iter("prefix:*"):
-            self.__redis.delete(key)
+        keys = self.__redis.keys('*')
+        self.__redis.delete(*keys)
 
     def invoke_trigger(self, p_commands, p_data=None):
 
