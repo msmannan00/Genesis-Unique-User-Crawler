@@ -49,7 +49,7 @@ class helper_method:
 
     @staticmethod
     def write_data(p_content, p_path):
-        f = open(p_path.S_UNIQUE_HOST_FILE, "a")
+        f = open(p_path, "a")
         f.write(p_content + "\n")
         f.close()
 
