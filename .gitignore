@@ -5,3 +5,4 @@ venv
 .venv
 tor_proxy
 global_raw
+app/live_url.txt
