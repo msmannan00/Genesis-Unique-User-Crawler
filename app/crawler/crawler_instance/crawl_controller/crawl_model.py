@@ -1,5 +1,6 @@
 # Local Imports
 import threading
+import requests
 from time import sleep
 from crawler.constants import status
 from crawler.constants.constant import CRAWL_SETTINGS_CONSTANTS, RAW_PATH_CONSTANTS
@@ -30,8 +31,23 @@ class crawl_model(request_handler):
 
         return m_response.text.splitlines()
 
-        # m_updated_url_list = ['http://22yaikp4gup23jpi7cl6fgik4uaczmobcbfair3i6cawhxpitm24cyid.onion/','http://22ydj36huwknzitl3ijzbeiqwhlpv4p7jclmrhoxui5tctsyur2r4mqd.onion/','http://22yltoipvb426kghzvn2uxohhfo4ozkirf5y7avvmj3wlcb3727vshqd.onion/']
-        # return m_updated_url_list
+    def __post_updated_urls(self):
+        try:
+            response = requests.get(CRAWL_SETTINGS_CONSTANTS.S_UPDATE_URL + "?type=clean")
+            log.g().s(response.text)
+
+            with open(RAW_PATH_CONSTANTS.S_UNIQUE_HOST_FILE) as f:
+                m_url_list = f.read().splitlines()
+
+            for url in m_url_list:
+                try:
+                    requests.get(CRAWL_SETTINGS_CONSTANTS.S_UPDATE_URL+"?type=add&url=" + url)
+                    log.g().s(url + " : url installed")
+                except Exception:
+                    pass
+
+        except Exception as ex:
+            log.g().e(ex)
 
     def __start_request(self):
         log.g().i(MANAGE_CRAWLER_MESSAGES.S_REINITIALIZING_CRAWLABLE_URL)
@@ -41,6 +57,7 @@ class crawl_model(request_handler):
             m_live_url_list = self.__install_live_url()
             m_counter += 1
             for m_url_node in m_live_url_list:
+
                 try:
                     while status.S_THREAD_COUNT >= CRAWL_SETTINGS_CONSTANTS.S_MAX_THREAD_COUNT:
                         sleep(0.1)
@@ -52,16 +69,17 @@ class crawl_model(request_handler):
                     log.g().e(str(ex) + " : GLOBAL EXCEPTION")
 
             while status.S_THREAD_COUNT > 0:
-                sleep(5)
+                sleep(432000)
                 continue
 
             if m_counter == 6:
                 redis_controller.get_instance().invoke_trigger(REDIS_COMMANDS.S_CLEAN, [])
                 helper_method.sort_result(RAW_PATH_CONSTANTS.S_UNIQUE_HOST_FILE)
+                self.__post_updated_urls()
                 log.g().s("GLOBAL DUPLICATION CRAWL FINISHED")
-                break
-
-        raise SystemExit
+                log.g().s("Crawler Sleeping")
+                sleep(15)
+                log.g().s("Crawler Waking up")
 
     def invoke_trigger(self, p_command, p_data=None):
         if p_command == CRAWL_MODEL_COMMANDS.S_INIT:

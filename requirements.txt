@@ -4,9 +4,10 @@ html-similarity
 jaccard-index
 xxhash
 Pillow
+requests
+gensim
 
 ###### Requirements with Version Specifiers ######
-requests==2.28.1
 lxml==4.9.1
 simplejson==3.17.6
 redis==4.3.4
